@@ -1,0 +1,15 @@
+<project toolsVersion="5.0">
+  <dependency name="premake" linkPath="../../_build/host-deps/premake">
+    <package name="premake" version="5.0.0-master.776a4c9-win" platforms="windows-x86_64" />
+    <package name="premake" version="5.0.0-master.776a4c9-linux" platforms="linux-x86_64 linux-aarch64" />
+  </dependency>
+  <dependency name="msvc141u5" linkPath="../../_build/host-deps/msvc141u5">
+    <package name="msvc" version="141u5-sdk17763" platforms="windows-x86_64" />
+  </dependency>
+  <dependency name="winsdk" linkPath="../../_build/host-deps/winsdk">
+    <package name="winsdk" version="10.17763" platforms="windows-x86_64"/>
+  </dependency>
+  <dependency name="drivepdk" linkPath="../../_build/host-deps/drivepdk">
+    <package name="drivepdk_slim" version="5.0.10.2" platforms="linux-x86_64" />
+  </dependency>
+</project>

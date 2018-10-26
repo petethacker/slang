@@ -1,0 +1,76 @@
+<project toolsVersion="5.0">
+  <remote name="github-slang" type="https" packageLocation=
+   "github.com/shader-slang/slang/releases/download/v${version}/slang-${version}-win64.zip"/>
+  <remote name="github-slang-linux" type="https" packageLocation=
+  "github.com/shader-slang/slang/releases/download/v${version}/slang-${version}-linux-x86_64.zip"/>
+  <dependency name="carbonite_assets" linkPath="../../_build/assets">
+    <package name="carbonite_assets" version="deadbeef"/>
+  </dependency>
+  <dependency name="winsdk" linkPath="../../_build/target-deps/winsdk">
+    <package name="winsdk" version="10.17763" platforms="windows-x86_64"/>
+  </dependency>
+  <dependency name="pybind11" linkPath="../../_build/target-deps/pybind11">
+    <package name="pybind11" version="6862cb9b" />
+  </dependency>
+  <dependency name="python" linkPath="../../_build/target-deps/python">
+    <package name="python" version="3.7.0-windows-x64" platforms="windows-x86_64" />
+    <package name="python-dev" version="3.6.6-linux-x64" platforms="linux-x86_64" />
+    <package name="python-dev" version="3.6.6-linux-aarch64" platforms="linux-aarch64" />
+  </dependency>
+  <dependency name="rapidjson" linkPath="../../_build/target-deps/rapidjson">
+    <package name="rapidjson" version="1.1.0" />
+  </dependency>
+  <dependency name="glfw" linkPath="../../_build/target-deps/glfw">
+    <package name="glfw" version="3.3-30faf19-${platform}" platforms="windows-x86_64 linux-x86_64" />
+    <package name="glfw" version="3.3-30faf19-linux-wayland-aarch64" platforms="linux-aarch64" />
+  </dependency>
+  <dependency name="imgui" linkPath="../../_build/target-deps/imgui">
+    <package name="imgui" version="1.6-e705ee4-${platform}" />
+  </dependency>
+  <dependency name="lua" linkPath="../../_build/target-deps/lua">
+    <package name="lua" version="5.3.4.1" />
+  </dependency>
+  <dependency name="catch2" linkPath="../../_build/target-deps/catch2">
+    <package name="catch2" version="2.2.2-28e68b9"/>
+  </dependency>
+  <dependency name="vulkansdk" linkPath="../../_build/target-deps/vulkansdk">
+    <package name="vulkansdk" version="1.1.85.0-windows-x86_64" platforms="windows-x86_64" />
+    <package name="vulkansdk" version="1.1.85.0-linux-x86_64" platforms="linux-x86_64" />
+    <package name="vulkansdk" version="1.1.73.0-linux-aarch64" platforms="linux-aarch64" />
+  </dependency>
+  <dependency name="slang" linkPath="../../_build/target-deps/slang">
+    <package name="slang" version="0.10.32" platforms="windows-x86_64" remotes="github-slang" />
+    <package name="slang" version="0.10.32" platforms="linux-x86_64" remotes="github-slang-linux" />
+  </dependency>
+  <dependency name="slang_aarch64" linkPath="../../_build/target-deps/slang">
+    <package name="slang-aarch64" version="0.10.32.1" platforms="linux-aarch64" />
+  </dependency>
+  <dependency name="dxc" linkPath="../../_build/target-deps/dxc">
+    <package name="dxc" version="13jul2018-bda314f6-windows-x86_64" platforms="windows-x86_64" />
+  </dependency>
+  <dependency name="concurrentqueue" linkPath="../../_build/target-deps/concurrentqueue">
+    <package name="concurrentqueue" version="1.0.0-beta"/>
+  </dependency>
+  <dependency name="drivepdk" linkPath="../../_build/target-deps/drivepdk">
+    <package name="drivepdk_slim" version="5.0.10.2" platforms="linux-aarch64" />
+  </dependency>
+  <dependency name="glm" linkPath="../../_build/target-deps/glm">
+    <package name="glm" version="0.9.9.1" />
+  </dependency>
+  <dependency name="gli" linkPath="../../_build/target-deps/gli">
+    <package name="gli" version="0.8.3-ebb2666" />
+  </dependency>
+  <dependency name="fmt" linkPath="../../_build/target-deps/fmt">
+    <package name="fmt" version="5.2.1"/>
+  </dependency>
+  <dependency name="nvtx" linkPath="../../_build/target-deps/nvtx">
+    <package name="nvtx" version="5.6.0.18099-${platform}" platforms="windows-x86_64" />
+    <package name="nvtx" version="3-20180925" platforms="linux-x86_64" />
+  </dependency>
+  <dependency name="assimp" linkPath="../../_build/target-deps/assimp">
+    <package name="assimp" version="4.0.1" platforms="windows-x86_64" />
+  </dependency>
+  <dependency name="cxxopts" linkPath="../../_build/target-deps/cxxopts">
+    <package name="cxxopts" version="2.1.1" />
+  </dependency>
+</project>

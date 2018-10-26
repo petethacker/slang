@@ -1,0 +1,5 @@
+<project toolsVersion="5.0">
+  <dependency name="carbonite_assets" linkPath="../../_build/assets">
+    <package name="carbonite_assets" version="deadfa11" />
+  </dependency>
+</project>

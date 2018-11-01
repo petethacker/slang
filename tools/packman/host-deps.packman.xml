@@ -1,0 +1,6 @@
+<project toolsVersion="5.0">
+  <dependency name="premake" linkPath="../../_build/host-deps/premake">
+    <package name="premake" version="5.0.0-master.776a4c9-win" platforms="windows-x86_64" />
+    <package name="premake" version="5.0.0-master.776a4c9-linux" platforms="linux-x86_64 linux-aarch64" />
+  </dependency>
+</project>

@@ -10,4 +10,6 @@ error_exit()
 
 source "./tools/packman/packman" pull "./tools/packman/host-deps.packman.xml" -p linux-x86_64 || error_exit "There was an error running packman."
 
-"./_packman-packages/host-deps/premake/premake5" gmake --file="${MY_DIR}/premake5.lua" --os=linux || error_exit "Error while generating projects with premake"
+# "./_packman-packages/host-deps/premake/premake5" gmake --file="${MY_DIR}/premake5.lua" --os=linux || error_exit "Error while generating projects with premake"
+
+"./_packman-packages/host-deps/premake/premake5" --os=linux gmake --build-location="build.linux"

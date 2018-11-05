@@ -712,7 +712,28 @@ struct IRBuilder
 
     IRWitnessTable* lookupWitnessTable(Name* mangledName);
     void registerWitnessTable(IRWitnessTable* table);
+
+        /// Create an empty basic block.
+        ///
+        /// The created block will not be inserted into the current
+        /// function; call `insertBlock()` to attach the block
+        /// at an appropriate point.
+        ///
     IRBlock* createBlock();
+
+        /// Insert a block into the current function.
+        ///
+        /// This attaches the given `block` to the current function,
+        /// and makes it the current block for
+        /// new instructions that get emitted.
+        ///
+    void insertBlock(IRBlock* block);
+
+        /// Emit a new block into the current function.
+        ///
+        /// This function is equivalent to using `createBlock()`
+        /// and then `insertBlock()`.
+        ///
     IRBlock* emitBlock();
 
     
@@ -873,13 +894,13 @@ struct IRBuilder
     template <typename T>
     T* addRefObjectToFree(T* ptr)
     {
-        getModule()->addRefObjectToFree(ptr);
+        getModule()->getObjectScopeManager()->addMaybeNull(ptr);
         return ptr;
     }
     StringRepresentation* addStringToFree(const String& string)
     {
         StringRepresentation* stringRep = string.getStringRepresentation();
-        getModule()->addRefObjectToFree(stringRep);
+        getModule()->getObjectScopeManager()->addMaybeNull(stringRep);
         return stringRep;
     }
 

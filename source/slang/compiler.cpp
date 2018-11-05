@@ -139,6 +139,19 @@ namespace Slang
         return Profile::Unknown;
     }
 
+    char const* Profile::getName()
+    {
+        switch( raw )
+        {
+        default:
+            return "unknown";
+
+        #define PROFILE(TAG, NAME, STAGE, VERSION) case Profile::TAG: return #NAME;
+        #define PROFILE_ALIAS(TAG, DEF, NAME) /* empty */
+        #include "profile-defs.h"
+        }
+    }
+
     Stage findStageByName(String const& name)
     {
         static const struct
@@ -268,7 +281,7 @@ namespace Slang
         }
     }
 
-    char const* GetHLSLProfileName(Profile profile)
+    String GetHLSLProfileName(Profile profile)
     {
         switch( profile.getFamily() )
         {
@@ -285,15 +298,64 @@ namespace Slang
             break;
         }
 
-        switch(profile.raw)
+        char const* stagePrefix = nullptr;
+        switch( profile.GetStage() )
         {
-        #define PROFILE(TAG, NAME, STAGE, VERSION) case Profile::TAG: return #NAME;
-        #include "profile-defs.h"
+            // Note: All of the raytracing-related stages require
+            // compiling for a `lib_*` profile, even when only a
+            // single entry point is present.
+            //
+            // We also go ahead and use this target in any case
+            // where we don't know the actual stage to compiel for,
+            // as a fallback option.
+            //
+            // TODO: We also want to use this option when compiling
+            // multiple entry points to a DXIL library.
+            //
+        default:
+            stagePrefix = "lib";
+            break;
+
+            // The traditional rasterization pipeline and compute
+            // shaders all have custom profile names that identify
+            // both the stage and shader model, which need to be
+            // used when compiling a single entry point.
+            //
+    #define CASE(NAME, PREFIX) case Stage::NAME: stagePrefix = #PREFIX; break
+        CASE(Vertex,    vs);
+        CASE(Hull,      hs);
+        CASE(Domain,    ds);
+        CASE(Geometry,  gs);
+        CASE(Fragment,  ps);
+        CASE(Compute,   cs);
+    #undef CASE
+        }
+
+        char const* versionSuffix = nullptr;
+        switch(profile.GetVersion())
+        {
+    #define CASE(TAG, SUFFIX) case ProfileVersion::TAG: versionSuffix = #SUFFIX; break
+        CASE(DX_4_0,             _4_0);
+        CASE(DX_4_0_Level_9_0,   _4_0_level_9_0);
+        CASE(DX_4_0_Level_9_1,   _4_0_level_9_1);
+        CASE(DX_4_0_Level_9_3,   _4_0_level_9_3);
+        CASE(DX_4_1,             _4_1);
+        CASE(DX_5_0,             _5_0);
+        CASE(DX_5_1,             _5_1);
+        CASE(DX_6_0,             _6_0);
+        CASE(DX_6_1,             _6_1);
+        CASE(DX_6_2,             _6_2);
+        CASE(DX_6_3,             _6_3);
+    #undef CASE
 
         default:
-            // TODO: emit an error here!
             return "unknown";
         }
+
+        String result;
+        result.append(stagePrefix);
+        result.append(versionSuffix);
+        return result;
     }
 
 #if SLANG_ENABLE_DXBC_SUPPORT
@@ -366,6 +428,18 @@ namespace Slang
             dxMacros = dxMacrosStorage.Buffer();
         }
 
+        DWORD flags = 0;
+
+        switch( targetReq->floatingPointMode )
+        {
+        default:
+            break;
+
+        case FloatingPointMode::Precise:
+            flags |= D3DCOMPILE_IEEE_STRICTNESS;
+            break;
+        }
+
         ID3DBlob* codeBlob;
         ID3DBlob* diagnosticsBlob;
         HRESULT hr = D3DCompile_(
@@ -375,9 +449,9 @@ namespace Slang
             dxMacros,
             nullptr,
             getText(entryPoint->name).begin(),
-            GetHLSLProfileName(profile),
-            0,
-            0,
+            GetHLSLProfileName(profile).Buffer(),
+            flags,
+            0, // unused: effect flags
             &codeBlob,
             &diagnosticsBlob);
 
@@ -787,13 +861,12 @@ String dissassembleDXILUsingDXC(
     }
 
     static void writeEntryPointResultToFile(
-        EntryPointRequest*  entryPoint,
-        TargetRequest*      targetReq,
-        UInt                entryPointIndex)
+        EntryPointRequest*      entryPoint,
+        String const&           outputPath,
+        CompileResult const&    result)
     {
         auto compileRequest = entryPoint->compileRequest;
-        auto outputPath = entryPoint->outputPath;
-        auto result = targetReq->entryPointResults[entryPointIndex];
+
         switch (result.format)
         {
         case ResultFormat::Text:
@@ -837,12 +910,11 @@ String dissassembleDXILUsingDXC(
     }
 
     static void writeEntryPointResultToStandardOutput(
-        EntryPointRequest*  entryPoint,
-        TargetRequest*      targetReq,
-        UInt                entryPointIndex)
+        EntryPointRequest*      entryPoint,
+        TargetRequest*          targetReq,
+        CompileResult const&    result)
     {
         auto compileRequest = entryPoint->compileRequest;
-        auto& result = targetReq->entryPointResults[entryPointIndex];
 
         switch (result.format)
         {
@@ -924,26 +996,32 @@ String dissassembleDXILUsingDXC(
         TargetRequest*      targetReq,
         UInt                entryPointIndex)
     {
+        // It is possible that we are dynamically discovering entry
+        // points (using `[shader(...)]` attributes), so that the
+        // number of entry points on the compile request does not
+        // match the number of entries in teh `entryPointOutputPaths`
+        // array.
+        //
+        String outputPath;
+        if( entryPointIndex < targetReq->entryPointOutputPaths.Count() )
+        {
+            outputPath = targetReq->entryPointOutputPaths[entryPointIndex];
+        }
+
         auto& result = targetReq->entryPointResults[entryPointIndex];
 
         // Skip the case with no output
         if (result.format == ResultFormat::None)
             return;
 
-        if (entryPoint->outputPath.Length())
+        if (outputPath.Length())
         {
-            writeEntryPointResultToFile(entryPoint, targetReq, entryPointIndex);
+            writeEntryPointResultToFile(entryPoint, outputPath, result);
         }
         else
         {
-            writeEntryPointResultToStandardOutput(entryPoint, targetReq, entryPointIndex);
+            writeEntryPointResultToStandardOutput(entryPoint, targetReq, result);
         }
-    }
-
-    void emitEntryPoints(
-        TargetRequest*          /*targetReq*/)
-    {
-
     }
 
     void generateOutputForTarget(

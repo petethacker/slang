@@ -36,9 +36,6 @@ struct TestCategory
 
     // The logical "super-category" of this category
     TestCategory* parent;
-
-    // A list of categories that we explicitly want to exclude
-    List<TestCategory*> prohibitedCategories;
 };
 
 // Options for a particular test
@@ -955,6 +952,15 @@ TestResult runCrossCompilerTest(TestContext* context, TestInput& input)
         result = TestResult::Fail;
     }
 
+    // Always fail if the compilation produced a failure, just
+    // to catch situations where, e.g., command-line options parsing
+    // caused the same error in both the Slang and glslang cases.
+    //
+    if( actualSpawner.getResultCode() != 0 )
+    {
+        result = TestResult::Fail;
+    }
+
     // If the test failed, then we write the actual output to a file
     // so that we can easily diff it from the command line and
     // diagnose the problem.
@@ -1084,6 +1090,15 @@ TestResult runHLSLComparisonTest(TestContext* context, TestInput& input)
     }
     // Otherwise we compare to the expected output
     else if (actualOutput != expectedOutput)
+    {
+        result = TestResult::Fail;
+    }
+
+    // Always fail if the compilation produced a failure, just
+    // to catch situations where, e.g., command-line options parsing
+    // caused the same error in both the Slang and fxc cases.
+    //
+    if( resultCode != 0 )
     {
         result = TestResult::Fail;
     }
@@ -1912,6 +1927,8 @@ int main(
     auto vulkanTestCategory = addTestCategory("vulkan", fullTestCategory);
 
     auto unitTestCatagory = addTestCategory("unit-test", fullTestCategory);
+
+    auto compatibilityIssueCatagory = addTestCategory("compatibility-issue", fullTestCategory);
 
     // An un-categorized test will always belong to the `full` category
     g_defaultTestCategory = fullTestCategory;

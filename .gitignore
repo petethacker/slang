@@ -25,4 +25,5 @@ build.*/
 *.spv
 
 # internal CI scripts
+_deps/
 slang-extras/

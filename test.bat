@@ -29,6 +29,16 @@ if "%1"=="-configuration" (
 	goto :ARGLOOP
 )
 
+:Loop
+    if "%1" equ "" goto Continue
+    if "%1" equ "-debug" ( set SLANG_TEST_CONFIG=Debug )
+	if "%1" equ "-release" ( set SLANG_TEST_CONFIG=Release )
+	if "%1" equ "-platform" ( set SLANG_TEST_PLATFORM=%2 & shift )
+	if "%1" equ "-configuration" ( set SLANG_TEST_CONFIG=%2 & shift )
+    shift
+goto Loop
+:Continue
+
 :: When done with arguments, we'll just fall through here
 
 

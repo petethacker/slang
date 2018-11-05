@@ -67,7 +67,8 @@ workspace "slang"
     objdir "intermediate/%{cfg.system}-%{cfg.platform:lower()}/%{cfg.buildcfg:lower()}/%{prj.name}"
 
     -- Statically link to the C/C++ runtime rather than create a DLL dependency.
-    flags { "StaticRuntime" }
+    -- flags { "StaticRuntime" }
+    staticruntime "On"
 
     -- Once we've set up the common settings, we will make some tweaks
     -- that only apply in a subset of cases. Each call to `filter()`

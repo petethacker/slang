@@ -75,7 +75,7 @@ DIAGNOSTIC(    21, Error, expectedArgumentForOption, "expected an argument for c
 DIAGNOSTIC(    24, Error, unknownLineDirectiveMode, "unknown '#line' directive mode '$0'");
 DIAGNOSTIC(    25, Error, unknownFloatingPointMode, "unknown floating-point mode '$0'");
 
-DIAGNOSTIC(    30, Error, sameStageSpecifiedMoreThanOnce, "the stage '$0' was specified more than once for entry point '$1'")
+DIAGNOSTIC(    30, Warning, sameStageSpecifiedMoreThanOnce, "the stage '$0' was specified more than once for entry point '$1'")
 DIAGNOSTIC(    31, Error, conflictingStagesForEntryPoint, "conflicting stages have been specified for entry point '$0'")
 DIAGNOSTIC(    32, Warning, explicitStageDoesntMatchImpliedStage, "the stage specified for entry point '$0' ('$1') does not match the stage implied by the source file name ('$2')")
 DIAGNOSTIC(    33, Error, stageSpecificationIgnoredBecauseNoEntryPoints, "one or more stages were specified, but no entry points were specified with '-entry'")
@@ -95,6 +95,8 @@ DIAGNOSTIC(    50, Error, duplicateTargets, "the target '$0' has been specified 
 
 DIAGNOSTIC(    60, Error, cannotDeduceOutputFormatFromPath, "cannot infer an output format from the output path '$0'")
 DIAGNOSTIC(    61, Error, cannotMatchOutputFileToTarget, "no specified '-target' option matches the output path '$0', which implies the '$1' format")
+
+DIAGNOSTIC(    62, Error, failedToFindFunctionInSharedLibrary, "failed to find function '$0' in shared/dynamic library '$1'")
 
 DIAGNOSTIC(    70, Error, cannotMatchOutputFileToEntryPoint, "the output path '$0' is not associated with any entry point; a '-o' option for a compiled kernel must follow the '-entry' option for its corresponding entry point")
 
